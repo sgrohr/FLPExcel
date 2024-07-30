@@ -96,6 +96,14 @@ Public Class clsExcel
         Return (New Tools.clsBoolwithReason(True))
     End Function
 
+    Public Sub OpenDocument(Filename)
+        Dim objXlsx As New Excel.Application
+        Dim path As String = Filename
+        objXlsx.Workbooks.Open(path)
+        objXlsx.Visible = True
+    End Sub
+
+
     Friend Sub ReleaseComObject(ByVal o As Object)
         Try
             System.Runtime.InteropServices.Marshal.FinalReleaseComObject(o)
@@ -152,9 +160,14 @@ Public Class clsExcel
                         End If
                     End If
                     If o.GetType Is GetType(String) Then
+                        m_ExcelApp.Cells(CurRow, colCnt).HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft
                         Dim str As String = o
                         If Not String.IsNullOrEmpty(str) AndAlso IsNumeric(str.Substring(0, 1)) Then
-                            str = "'" & str
+                            If Len(str) > 1 Then
+                                If Not IsNumeric(str) Then
+                                    str = "'" & str
+                                End If
+                            End If
                         End If
                         m_ExcelApp.Cells(CurRow, colCnt) = str
                     Else
